@@ -14,11 +14,11 @@ public class PlayerMovement : MonoBehaviour
     private bool _isLockRotationInCD = false;
     private float _skillLockRotationCD = 3f;
     private float _skillLockRotationCDCounter = 0f;
-    private float _rotateAnglePerSecond = 15f;
+    private float _rotateAnglePerSecond = -15f;
 
     private bool _isScaning = false;
     private bool _isScanAllInCD = false;
-    private float _skillScanAllCD = 10f;
+    private float _skillScanAllCD = 60f;
     private float _skillScanAllCDConnter = 0f;
     private float _skillScanAllTime = 9f;
     private float _skillScanAllCouner = 0f;
@@ -66,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
                 _isScaning = false;
                 _isScanAllInCD = true;
                 _fov.viewAngle = _originFOV;
-                _skillScanAllCDConnter = _skillLockRotationCD;
+                _skillScanAllCDConnter = _skillScanAllCD;
             }
         }
         if (_isScanAllInCD)
@@ -81,6 +81,11 @@ public class PlayerMovement : MonoBehaviour
                 _isScanAllInCD = false;
                 skillScanAllButtonText.text = "Scan All";
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
         }
     }
 
@@ -125,7 +130,7 @@ public class PlayerMovement : MonoBehaviour
         foreach (GameObject tower in _fov.visibleTargets)
         {
             _newTowerListInFOV.Add(tower);
-            tower.GetComponent<Tower>().isWatched = true;
+            tower.GetComponentInChildren<Tower>().isWatched = true;
         }
 
         //偵測現在跟之前是否缺少哪個，並讓她isWatched變成false
@@ -134,7 +139,7 @@ public class PlayerMovement : MonoBehaviour
             if (!_newTowerListInFOV.Contains(tower))
             {
                 Debug.Log($"塔{tower.gameObject.name}已不在視野內");
-                tower.GetComponent<Tower>().isWatched = false;
+                tower.GetComponentInChildren<Tower>().isWatched = false;
             }
         }
     }

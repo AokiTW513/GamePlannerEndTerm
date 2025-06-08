@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
@@ -46,6 +47,9 @@ public class Tower : MonoBehaviour
     public bool isWatched = false;
     private float _watchedTimer = 0f;
     private bool _isWatchedTimerReset = false;
+
+    [SerializeField]
+    private GameObject _bulletPrefab;
     
     public virtual void Awake()
     {
@@ -167,14 +171,22 @@ public class Tower : MonoBehaviour
         {
             canAttacked = false;
             atkCDCounter = atkSpeed;
-            _enemyATK.GetComponent<Enemy>().TakeDamage(damage * atkMultiplier);
-            Debug.Log($"Tower Attack {_enemyATK.gameObject.name}, Damage is {damage * atkMultiplier}");
+            SpawnBullet();
+            // _enemyATK.GetComponent<Enemy>().TakeDamage(damage * atkMultiplier);
+            // Debug.Log($"Tower Attack {_enemyATK.gameObject.name}, Damage is {damage * atkMultiplier}");
         }
     }
 
     public void SetRotation(Quaternion towerRotation)
     {
         _towerObject.transform.rotation = towerRotation;
+    }
+
+    private void SpawnBullet()
+    {
+        GameObject bullet = Instantiate(_bulletPrefab, transform.position, transform.rotation);
+        bullet.GetComponent<BulletMove>().SetBullet(_enemyATK, damage * atkMultiplier);
+        Destroy(bullet, 5f);
     }
 
     public void CheckTarget()
@@ -235,6 +247,7 @@ public class Tower : MonoBehaviour
             if (_enemyATK.GetComponent<Enemy>().type == 3 && type != 3)
             {
                 damage = damage / 3;
+                damage = Mathf.Round(damage);
             }
             TowerAttack();
             damage = _originDamage;

@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.EnhancedTouch;
+using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 public class GameManager : MonoBehaviour
 {
@@ -49,8 +52,10 @@ public class GameManager : MonoBehaviour
 
     private TowerManager _currentChooseTower;
     public Button upgradeButton;
+    public Text upgradeButtonText;
     public GameObject upgradeSellUIObject;
     public Button sellButton;
+    public Text sellButtonText;
 
     public Button doubleSpeedButton;
     public Text doubleSpeedButtonText;
@@ -60,6 +65,7 @@ public class GameManager : MonoBehaviour
     public GameObject _towerManagerPrefab; // 放置用點的Prefab（可以只是空物件或帶小圓圖）
     private int numberOfPoints = 12;
     private float radius = 3.5f;
+    private Vector3 _offset = new Vector3(0, 1, 0);
 
     private void Awake()
     {
@@ -144,16 +150,28 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (IsTouchOrClickDown())
         {
-            if (EventSystem.current.IsPointerOverGameObject())
+            bool clickedUI = false;
+            if (Input.touchCount > 0)
             {
-                return;
+                clickedUI = EventSystem.current.IsPointerOverGameObject(Pointer.current.deviceId);
+            }
+            else
+            {
+                clickedUI = EventSystem.current.IsPointerOverGameObject();
             }
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (clickedUI) return;
+
+            //一次偵測多個Layer不偵測
+            int excludeLayers = (1 << LayerMask.NameToLayer("Enemy")) | (1 << LayerMask.NameToLayer("Bullet")) | (1 << LayerMask.NameToLayer("Tower")) | (1 << LayerMask.NameToLayer("Player"));
+            int finalMask = ~excludeLayers;
+ 
+            Vector3 inputPos = Input.touchCount > 0 ? Input.GetTouch(0).position : Input.mousePosition;
+            Ray ray = Camera.main.ScreenPointToRay(inputPos);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 100f))
+            if (Physics.Raycast(ray, out hit, 100f, finalMask))
             {
                 if (hit.collider.gameObject.GetComponent<TowerManager>() != null)
                 {
@@ -161,7 +179,7 @@ public class GameManager : MonoBehaviour
                     {
                         if (_currentBuyTower != null)
                         {
-                            if (_money > _currentBuyTower.GetComponent<Tower>().buyMoney)
+                            if (_money >= _currentBuyTower.GetComponent<Tower>().buyMoney)
                             {
                                 if (hit.collider.gameObject.GetComponent<TowerManager>().towerType == 0)
                                 {
@@ -203,6 +221,18 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    private bool IsTouchOrClickDown()
+    {
+        // 滑鼠點擊
+        if (Input.GetMouseButtonDown(0))
+            return true;
+
+        // 手機點擊
+        if (Touch.activeTouches.Count > 0 && Touch.activeTouches[0].phase == UnityEngine.InputSystem.TouchPhase.Began)
+            return true;
+
+        return false;
+    }
 
     private void ShowOutline(bool show)
     {
@@ -228,6 +258,8 @@ public class GameManager : MonoBehaviour
             {
                 upgradeButton.interactable = false;
             }
+            upgradeButtonText.text = $"Upgrade ${_currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney}";
+            sellButtonText.text = $"Sell ${_currentChooseTower.currentTower.GetComponent<Tower>().sellMoney}";
             UIObject.SetActive(show);
         }
         else
@@ -241,7 +273,7 @@ public class GameManager : MonoBehaviour
     {
         if (_currentChooseTower != null)
         {
-            if (_money > _currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney)
+            if (_money >= _currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney)
             {
                 _currentChooseTower.currentTower.GetComponent<Tower>().Upgrade();
                 _currentChooseTower = null;
@@ -348,7 +380,7 @@ public class GameManager : MonoBehaviour
     private void SpawnEnemy()
     {
         int rnd = Random.Range(0, _spawnEnemyList.Count);
-        Instantiate(_spawnEnemyList[rnd], _spawnPosition, Quaternion.identity);
+        Instantiate(_spawnEnemyList[rnd], _spawnPosition + _offset, Quaternion.identity);
         _spawnEnemyList.RemoveAt(rnd);
         _spawnDelayCounter = _spawnDelay;
         if (_spawnEnemyList.Count == 0)

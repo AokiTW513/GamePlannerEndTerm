@@ -166,9 +166,9 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.01
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -184,6 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c52ddbe06bde942e09fc7bb8675319b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _fieldOfView: {fileID: 0}
   _towerObject: {fileID: 3486279065534781794}
   _sameTypeEnemy: []
   _notSameTypeEnemy: []
@@ -191,6 +192,7 @@ MonoBehaviour:
   isUpgrade: 0
   towerState: 1
   isWatched: 0
+  _bulletPrefab: {fileID: 8989328031618849957, guid: fdcaefc575ce87a49883930099099951, type: 3}
 --- !u!1 &6680658697471524125
 GameObject:
   m_ObjectHideFlags: 0
@@ -352,7 +354,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
