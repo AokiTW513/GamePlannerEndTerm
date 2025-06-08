@@ -8,10 +8,10 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public int _health;
-    public int _maxHealth = 10;
+    private int _maxHealth = 10;
     [SerializeField]
     private Text _healthText;
-    public int _money = 320;
+    private int _money = 320;
     [SerializeField]
     private Text _moneyText;
     private bool isLose = false;
@@ -22,10 +22,12 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Text _waveText;
     public float _spawnDelay = 1f;
-    public float _spawnDelayCounter = 0f;
+    private float _spawnDelayCounter = 0f;
     private bool _isAllEnemySpawned = true;
     public float _waveDelay = 5f;
-    public float _waveDelayCounter = 0f;
+    private float _waveDelayCounter = 0f;
+    [SerializeField]
+    private Text _waveCDText;
     public bool _isWaveEnable = true;
 
     private List<GameObject> _spawnEnemyList = new List<GameObject>();
@@ -54,6 +56,10 @@ public class GameManager : MonoBehaviour
     public Text doubleSpeedButtonText;
 
     private Vector3 _spawnPosition = new Vector3(-10, 0, 0);
+
+    public GameObject _towerManagerPrefab; // 放置用點的Prefab（可以只是空物件或帶小圓圖）
+    private int numberOfPoints = 12;
+    private float radius = 3.5f;
 
     private void Awake()
     {
@@ -90,8 +96,10 @@ public class GameManager : MonoBehaviour
         _waveText.text = $"波次:{_wave}/{_waveEnd}";
         _healthText.text = $"血量:{_health}/{_maxHealth}";
         _moneyText.text = $"錢:{_money}";
+        _waveCDText.text = $"距離下一波還有{_waveDelayCounter:F1}s";
 
         Time.timeScale = 1f;
+        SpawnTowerPlace();
     }
 
     private void Update()
@@ -111,6 +119,7 @@ public class GameManager : MonoBehaviour
                 }
                 if (_waveDelayCounter <= 0)
                 {
+                    _waveCDText.text = "";
                     _isAllEnemySpawned = false;
                     _wave = _wave + 1;
                     _spawnDelayCounter = 0f;
@@ -119,6 +128,7 @@ public class GameManager : MonoBehaviour
                 else if (enemies.Count == 0)
                 {
                     _waveDelayCounter -= Time.deltaTime;
+                    _waveCDText.text = $"距離下一波還有{_waveDelayCounter:F1}s";
                 }
             }
             else
@@ -161,11 +171,13 @@ public class GameManager : MonoBehaviour
                                 else
                                 {
                                     Debug.Log("bro u can't place tower again :(");
+                                    CancelBuyUpgrade();
                                 }
                             }
                             else
                             {
                                 Debug.Log("bro u don't have money lmao");
+                                CancelBuyUpgrade();
                             }
                         }
                         else
@@ -205,6 +217,7 @@ public class GameManager : MonoBehaviour
         _currentBuyTower = null;
         _currentChooseTower = null;
         ShowOutline(false);
+        Debug.Log("Cancel");
     }
 
     private void ShowUI(GameObject UIObject, bool show)
@@ -255,7 +268,7 @@ public class GameManager : MonoBehaviour
 
     private void ChooseBuyTower(GameObject tower, int type, Button button)
     {
-        ShowOutline(false);
+        CancelBuyUpgrade();
         _currentBuyTower = tower;
         _currentBuyTowerType = type;
         Debug.Log($"You Choose {type}");
@@ -342,6 +355,20 @@ public class GameManager : MonoBehaviour
         {
             _isAllEnemySpawned = true;
             _waveDelayCounter = _waveDelay;
+        }
+    }
+
+    private void SpawnTowerPlace()
+    {
+        for (int i = 0; i < numberOfPoints; i++)
+        {
+            float angle = i * Mathf.PI * 2f / numberOfPoints;
+            Vector3 newPos = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
+
+            GameObject towerManager = Instantiate(_towerManagerPrefab, transform);
+            towerManager.transform.localPosition = newPos;
+            towerManager.transform.LookAt(transform.position); // 可選，讓點朝向中心
+            towerManager.transform.Rotate(0f, 180f, 0f);  
         }
     }
 

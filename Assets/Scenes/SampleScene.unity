@@ -252,13 +252,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 37694124}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0.002013255, z: -2.3999866e-10, w: 0.999998}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 3, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -0.231, z: 0}
 --- !u!1 &53163544
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,6 +271,7 @@ GameObject:
   - component: {fileID: 53163547}
   - component: {fileID: 53163546}
   - component: {fileID: 53163548}
+  - component: {fileID: 53163549}
   m_Layer: 5
   m_Name: BuyTower2
   m_TagString: Untagged
@@ -380,6 +381,21 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &53163549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53163544}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0.75000596, b: 1, a: 1}
+  m_EffectDistance: {x: 10, y: -10}
+  m_UseGraphicAlpha: 1
 --- !u!1 &175462283
 GameObject:
   m_ObjectHideFlags: 0
@@ -1237,131 +1253,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 380376712}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &610218332
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 610218337}
-  - component: {fileID: 610218336}
-  - component: {fileID: 610218335}
-  - component: {fileID: 610218334}
-  - component: {fileID: 610218333}
-  m_Layer: 0
-  m_Name: TowerManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &610218333
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 610218332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 937a83533992bf441b32a5b34b529237, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  towerType: 0
-  currentTower: {fileID: 0}
---- !u!136 &610218334
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 610218332}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
---- !u!23 &610218335
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 610218332}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 5c37218f743f042459b3a2c12da0a4ea, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &610218336
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 610218332}
-  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &610218337
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 610218332}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 3, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.05, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &619852230
 GameObject:
   m_ObjectHideFlags: 0
@@ -1405,6 +1296,7 @@ GameObject:
   - component: {fileID: 643489435}
   - component: {fileID: 643489434}
   - component: {fileID: 643489436}
+  - component: {fileID: 643489437}
   m_Layer: 5
   m_Name: BuyTower1
   m_TagString: Untagged
@@ -1514,6 +1406,21 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &643489437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 643489432}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0.75000596, b: 1, a: 1}
+  m_EffectDistance: {x: 10, y: -10}
+  m_UseGraphicAlpha: 1
 --- !u!1 &688818555
 GameObject:
   m_ObjectHideFlags: 0
@@ -2353,11 +2260,11 @@ MonoBehaviour:
   _isWaveEnable: 0
   enemies: []
   Enemy1: {fileID: 4404407412230788920, guid: fbad41af9ed1f4a0fa343429299ca4f1, type: 3}
-  Enemy2: {fileID: 4404407412230788920, guid: af34add5a05904603b4bb1a9ed9f3c65, type: 3}
-  Enemy3: {fileID: 4404407412230788920, guid: f4f724a8c57834333b4fa53cc887154c, type: 3}
+  Enemy2: {fileID: 4404407412230788920, guid: 01286e7a2e70c69419b0b4cd5a41a50a, type: 3}
+  Enemy3: {fileID: 4404407412230788920, guid: bd87a33349d95dd43b34fe2d16423587, type: 3}
   tower1: {fileID: 5483877173093511110, guid: 3587874bf05796a41ba2da6adc460cd8, type: 3}
-  tower2: {fileID: 5483877173093511110, guid: e6c7f9dbcdcc656469e1317f1ddc2928, type: 3}
-  tower3: {fileID: 5483877173093511110, guid: ef2676814acfa144191af2685d3d47fc, type: 3}
+  tower2: {fileID: 5483877173093511110, guid: 7374966c171746647b6b8463df5080f7, type: 3}
+  tower3: {fileID: 5483877173093511110, guid: 044fbd3827573e241b0928cc47827cf1, type: 3}
   buyTower1Button: {fileID: 643489436}
   buyTower2Button: {fileID: 53163548}
   buyTower3Button: {fileID: 1202052345}
@@ -2574,6 +2481,7 @@ GameObject:
   - component: {fileID: 1202052347}
   - component: {fileID: 1202052346}
   - component: {fileID: 1202052345}
+  - component: {fileID: 1202052349}
   m_Layer: 5
   m_Name: BuyTower3
   m_TagString: Untagged
@@ -2683,6 +2591,21 @@ RectTransform:
   m_AnchoredPosition: {x: 700, y: -150}
   m_SizeDelta: {x: 360, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1202052349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1202052344}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0.75000596, b: 1, a: 1}
+  m_EffectDistance: {x: 10, y: -10}
+  m_UseGraphicAlpha: 1
 --- !u!1 &1218945511
 GameObject:
   m_ObjectHideFlags: 0
@@ -3911,4 +3834,3 @@ SceneRoots:
   - {fileID: 857671740}
   - {fileID: 380376712}
   - {fileID: 1020640972}
-  - {fileID: 610218337}

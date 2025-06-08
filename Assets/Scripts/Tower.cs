@@ -46,8 +46,6 @@ public class Tower : MonoBehaviour
     public bool isWatched = false;
     private float _watchedTimer = 0f;
     private bool _isWatchedTimerReset = false;
-    private float _notWatchedTimer = 0f;
-    private bool _isNotWatchedTimerReset = false;
     
     public virtual void Awake()
     {
@@ -109,19 +107,16 @@ public class Tower : MonoBehaviour
             {
                 towerState = 1;
                 SwitchTowerState();
-                _towerStateText.text = "正常";
             }
             else if (_watchedTimer >= 10f && _watchedTimer <= 30f)
             {
                 towerState = 2;
                 SwitchTowerState();
-                _towerStateText.text = "努力";
             }
             else if (_watchedTimer >= 30f)
             {
                 towerState = 3;
                 SwitchTowerState();
-                _towerStateText.text = "瘋狂努力";
             }
             if (_watchedTimer <= -15)
             {
