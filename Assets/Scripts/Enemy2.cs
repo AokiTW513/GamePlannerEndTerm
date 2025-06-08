@@ -5,8 +5,9 @@ public class Enemy2 : Enemy
 {
     public override void Awake()
     {
-        _health = 20f;
+        _maxHealth = 20f;
         _type = 2;
+        _dropMoney = 20;
         base.Awake();
     }
 }

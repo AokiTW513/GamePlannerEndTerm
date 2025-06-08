@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +9,10 @@ public class Tower : MonoBehaviour
     private float _originDamage;
     protected float atkSpeed = 100f;
     protected float fov = 150f;
-    
+    public virtual int sellMoney { get; } = 100;
+    public virtual int buyMoney { get; } = 100;
+    public virtual int upgradeMoney { get; } = 100;
+
     /*
     0=沒有
     1=普通正硯塔
@@ -17,7 +21,9 @@ public class Tower : MonoBehaviour
     */
     protected int type = 0;
 
-    private FieldOfView _fieldOfView;
+    public FieldOfView _fieldOfView;
+    [SerializeField]
+    private GameObject _towerObject;
     private Text _towerStateText;
     public List<GameObject> _sameTypeEnemy = new List<GameObject>();
     public List<GameObject> _notSameTypeEnemy = new List<GameObject>();
@@ -26,6 +32,7 @@ public class Tower : MonoBehaviour
     private bool canAttacked = true;
     private float atkCDCounter = 1f;
     private float atkMultiplier = 1f;
+    public bool isUpgrade = false;
 
     /*
     1=正常
@@ -44,7 +51,7 @@ public class Tower : MonoBehaviour
     
     public virtual void Awake()
     {
-        _fieldOfView = GetComponent<FieldOfView>();
+        _fieldOfView = GetComponentInChildren<FieldOfView>();
         _towerStateText = GetComponentInChildren<Text>();
         _towerStateText.text = "";
         _fieldOfView.viewAngle = fov;
@@ -136,17 +143,22 @@ public class Tower : MonoBehaviour
         fov = _fov;
         type = _type;
         _originDamage = damage;
-        Debug.Log("SetState:");
-        Debug.Log($"Damage:{damage}");
-        Debug.Log($"ATKSpeed:{atkSpeed}");
-        Debug.Log($"FOV:{fov}");
-        Debug.Log($"Type:{type}");
+    }
+
+    public virtual void SetState(float _damage)
+    {
+        damage = _damage;
     }
 
     public void Upgrade()
     {
-        atkMultiplier = 1.5f;
-        Debug.Log("OMG is upgrade");
+        if (!isUpgrade)
+        {
+            atkMultiplier = 1.5f;
+            isUpgrade = true;
+            GameManager.Instance.TakeMoney(-upgradeMoney);
+            Debug.Log("OMG is upgrade");
+        }
     }
 
     public virtual void SwitchTowerState()
@@ -163,6 +175,11 @@ public class Tower : MonoBehaviour
             _enemyATK.GetComponent<Enemy>().TakeDamage(damage * atkMultiplier);
             Debug.Log($"Tower Attack {_enemyATK.gameObject.name}, Damage is {damage * atkMultiplier}");
         }
+    }
+
+    public void SetRotation(Quaternion towerRotation)
+    {
+        _towerObject.transform.rotation = towerRotation;
     }
 
     public void CheckTarget()

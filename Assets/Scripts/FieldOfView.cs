@@ -71,9 +71,9 @@ public class FieldOfView : MonoBehaviour
             }
         }
         //如果是塔才要用這段
-        if (GetComponent<Tower>() != null)
+        if (GetComponentInParent<Tower>() != null)
         {
-            GetComponent<Tower>().CheckTarget();
+            GetComponentInParent<Tower>().CheckTarget();
         }
         //如果是老闆才要用這段
         if (GetComponent<PlayerMovement>() != null)

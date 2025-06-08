@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class Tower2 : Tower
 {
+    public override int sellMoney { get; } = 60;
+    public override int buyMoney { get; } = 120;
+    public override int upgradeMoney { get; } = 96;
+
     public override void Awake()
     {
         SetState(10f, 1f, 150f, 2);
@@ -19,19 +23,19 @@ public class Tower2 : Tower
         */
         if (towerState == 1)
         {
-            SetState(10f, 1f, 150f, 1);
+            SetState(10f);
         }
         else if (towerState == 2)
         {
-            SetState(15f, 1f, 150f, 1);
+            SetState(15f);
         }
         else if (towerState == 3)
         {
-            SetState(20f, 1f, 150f, 1);
+            SetState(20f);
         }
         else if (towerState == 4)
         {
-            SetState(5f, 1f, 150f, 1);
+            SetState(5f);
         }
     }
 }
