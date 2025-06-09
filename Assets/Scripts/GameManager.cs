@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -31,7 +32,8 @@ public class GameManager : MonoBehaviour
     private float _waveDelayCounter = 0f;
     [SerializeField]
     private Text _waveCDText;
-    public bool _isWaveEnable = true;
+    private bool _isWaveEnable = false;
+    public Button waveStartButton;
 
     private List<GameObject> _spawnEnemyList = new List<GameObject>();
     public List<GameObject> enemies = new List<GameObject>();
@@ -46,26 +48,41 @@ public class GameManager : MonoBehaviour
     public Button buyTower1Button;
     public Button buyTower2Button;
     public Button buyTower3Button;
+    public Text tower1PriceText;
+    public Text tower2PriceText;
+    public Text tower3PriceText;
     private GameObject _currentBuyTower;
     private int _currentBuyTowerType;
     public LayerMask placeLayer;
 
     private TowerManager _currentChooseTower;
     public Button upgradeButton;
-    public Text upgradeButtonText;
+    public Text upgradeText;
     public GameObject upgradeSellUIObject;
     public Button sellButton;
-    public Text sellButtonText;
+    public Text sellText;
 
     public Button doubleSpeedButton;
-    public Text doubleSpeedButtonText;
+    private bool _isDoubleSpeed = false;
+    public Sprite singleSpeed;
+    public Sprite doubleSpeed;
 
     private Vector3 _spawnPosition = new Vector3(-10, 0, 0);
 
     public GameObject _towerManagerPrefab; // 放置用點的Prefab（可以只是空物件或帶小圓圖）
     private int numberOfPoints = 12;
-    private float radius = 3.5f;
+    private float radius = 5f;
     private Vector3 _offset = new Vector3(0, 1, 0);
+
+    public Button restartButton;
+    public Button mainmenuButton;
+    public Button mainmenuPauseButton;
+    public Button continueButton;
+    public Button pauseButton;
+    public GameObject pauseUIObject;
+    public GameObject restartMainMenuUI;
+    public GameObject winUI;
+    public GameObject loseUI;
 
     private void Awake()
     {
@@ -77,7 +94,6 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject); // 場景切換不會消失
 
         _waveDelayCounter = _waveDelay;
         _isAllEnemySpawned = true;
@@ -92,17 +108,32 @@ public class GameManager : MonoBehaviour
         buyTower2Button.onClick.AddListener(() => ChooseBuyTower(tower2, 2, buyTower2Button));
         buyTower3Button.onClick.AddListener(() => ChooseBuyTower(tower3, 3, buyTower3Button));
 
+        waveStartButton.gameObject.SetActive(true);
+        waveStartButton.onClick.AddListener(OnStartButton);
+
         upgradeButton.onClick.AddListener(UpgradeTower);
         ShowUI(upgradeSellUIObject, false);
         _currentChooseTower = null;
         _currentChooseTower = null;
         sellButton.onClick.AddListener(SellTower);
         doubleSpeedButton.onClick.AddListener(SetDoubleSpeed);
-        doubleSpeedButtonText.text = "1";
         _waveText.text = $"波次:{_wave}/{_waveEnd}";
         _healthText.text = $"血量:{_health}/{_maxHealth}";
-        _moneyText.text = $"錢:{_money}";
+        _moneyText.text = $"${_money}";
         _waveCDText.text = $"距離下一波還有{_waveDelayCounter:F1}s";
+        tower1PriceText.text = $"${tower1.GetComponent<Tower>().buyMoney}";
+        tower2PriceText.text = $"${tower2.GetComponent<Tower>().buyMoney}";
+        tower3PriceText.text = $"${tower3.GetComponent<Tower>().buyMoney}";
+
+        restartButton.onClick.AddListener(OnRestartButton);
+        mainmenuButton.onClick.AddListener(OnMainMenuButton);
+        mainmenuPauseButton.onClick.AddListener(OnMainMenuButton);
+        continueButton.onClick.AddListener(OnContinueButton);
+        pauseButton.onClick.AddListener(OnPauseButton);
+        pauseUIObject.SetActive(false);
+        restartMainMenuUI.SetActive(false);
+        winUI.SetActive(false);
+        loseUI.SetActive(false);
 
         Time.timeScale = 1f;
         SpawnTowerPlace();
@@ -110,114 +141,118 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (_isWaveEnable)
+        if (!isLose || !isWin)
         {
-            if (_isAllEnemySpawned)
+            if (_isWaveEnable)
             {
-                if (_wave == _waveEnd)
+                if (_isAllEnemySpawned)
                 {
-                    if (enemies.Count == 0 && !isLose)
+                    if (_wave == _waveEnd)
                     {
-                        isWin = true;
-                        Time.timeScale = 0f;
-                        Debug.Log("You Win!");
+                        if (enemies.Count == 0 && !isLose)
+                        {
+                            isWin = true;
+                            OnWin();
+                            Time.timeScale = 0f;
+                            Debug.Log("You Win!");
+                        }
                     }
-                }
-                if (_waveDelayCounter <= 0)
-                {
-                    _waveCDText.text = "";
-                    _isAllEnemySpawned = false;
-                    _wave = _wave + 1;
-                    _spawnDelayCounter = 0f;
-                    NewWave();
-                }
-                else if (enemies.Count == 0)
-                {
-                    _waveDelayCounter -= Time.deltaTime;
-                    _waveCDText.text = $"距離下一波還有{_waveDelayCounter:F1}s";
-                }
-            }
-            else
-            {
-                if (_spawnDelayCounter <= 0)
-                {
-                    SpawnEnemy();
+                    if (_waveDelayCounter <= 0)
+                    {
+                        _waveCDText.text = "";
+                        _isAllEnemySpawned = false;
+                        _wave = _wave + 1;
+                        _spawnDelayCounter = 0f;
+                        NewWave();
+                    }
+                    else if (enemies.Count == 0)
+                    {
+                        _waveDelayCounter -= Time.deltaTime;
+                        _waveCDText.text = $"距離下一波還有{_waveDelayCounter:F1}s";
+                    }
                 }
                 else
                 {
-                    _spawnDelayCounter -= Time.deltaTime;
+                    if (_spawnDelayCounter <= 0)
+                    {
+                        SpawnEnemy();
+                    }
+                    else
+                    {
+                        _spawnDelayCounter -= Time.deltaTime;
+                    }
                 }
             }
-        }
 
-        if (IsTouchOrClickDown())
-        {
-            bool clickedUI = false;
-            if (Input.touchCount > 0)
+            if (IsTouchOrClickDown())
             {
-                clickedUI = EventSystem.current.IsPointerOverGameObject(Pointer.current.deviceId);
-            }
-            else
-            {
-                clickedUI = EventSystem.current.IsPointerOverGameObject();
-            }
-
-            if (clickedUI) return;
-
-            //一次偵測多個Layer不偵測
-            int excludeLayers = (1 << LayerMask.NameToLayer("Enemy")) | (1 << LayerMask.NameToLayer("Bullet")) | (1 << LayerMask.NameToLayer("Tower")) | (1 << LayerMask.NameToLayer("Player"));
-            int finalMask = ~excludeLayers;
- 
-            Vector3 inputPos = Input.touchCount > 0 ? Input.GetTouch(0).position : Input.mousePosition;
-            Ray ray = Camera.main.ScreenPointToRay(inputPos);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 100f, finalMask))
-            {
-                if (hit.collider.gameObject.GetComponent<TowerManager>() != null)
+                bool clickedUI = false;
+                if (Input.touchCount > 0)
                 {
-                    if (hit.collider.gameObject.GetComponent<TowerManager>().towerType == 0)
+                    clickedUI = EventSystem.current.IsPointerOverGameObject(Pointer.current.deviceId);
+                }
+                else
+                {
+                    clickedUI = EventSystem.current.IsPointerOverGameObject();
+                }
+
+                if (clickedUI) return;
+
+                //一次偵測多個Layer不偵測
+                int excludeLayers = (1 << LayerMask.NameToLayer("Enemy")) | (1 << LayerMask.NameToLayer("Bullet")) | (1 << LayerMask.NameToLayer("Tower")) | (1 << LayerMask.NameToLayer("Player"));
+                int finalMask = ~excludeLayers;
+
+                Vector3 inputPos = Input.touchCount > 0 ? Input.GetTouch(0).position : Input.mousePosition;
+                Ray ray = Camera.main.ScreenPointToRay(inputPos);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit, 100f, finalMask))
+                {
+                    if (hit.collider.gameObject.GetComponent<TowerManager>() != null)
                     {
-                        if (_currentBuyTower != null)
+                        if (hit.collider.gameObject.GetComponent<TowerManager>().towerType == 0)
                         {
-                            if (_money >= _currentBuyTower.GetComponent<Tower>().buyMoney)
+                            if (_currentBuyTower != null)
                             {
-                                if (hit.collider.gameObject.GetComponent<TowerManager>().towerType == 0)
+                                if (_money >= _currentBuyTower.GetComponent<Tower>().buyMoney)
                                 {
-                                    hit.collider.gameObject.GetComponent<TowerManager>().BuyTower(_currentBuyTowerType, _currentBuyTower);
-                                    CancelBuyUpgrade();
+                                    if (hit.collider.gameObject.GetComponent<TowerManager>().towerType == 0)
+                                    {
+                                        hit.collider.gameObject.GetComponent<TowerManager>().BuyTower(_currentBuyTowerType, _currentBuyTower);
+                                        CancelBuyUpgrade();
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("bro u can't place tower again :(");
+                                        CancelBuyUpgrade();
+                                    }
                                 }
                                 else
                                 {
-                                    Debug.Log("bro u can't place tower again :(");
+                                    Debug.Log("bro u don't have money lmao");
                                     CancelBuyUpgrade();
                                 }
                             }
                             else
                             {
-                                Debug.Log("bro u don't have money lmao");
-                                CancelBuyUpgrade();
+                                Debug.Log("You didn't choose Tower");
                             }
                         }
                         else
                         {
-                            Debug.Log("You didn't choose Tower");
+                            CancelBuyUpgrade();
+                            _currentChooseTower = hit.collider.gameObject.GetComponent<TowerManager>();
+                            ShowUI(upgradeSellUIObject, true);
                         }
                     }
                     else
                     {
                         CancelBuyUpgrade();
-                        _currentChooseTower = hit.collider.gameObject.GetComponent<TowerManager>();
-                        ShowUI(upgradeSellUIObject, true);
                     }
                 }
                 else
                 {
                     CancelBuyUpgrade();
                 }
-            }
-            else
-            {
-                CancelBuyUpgrade();
             }
         }
     }
@@ -250,6 +285,53 @@ public class GameManager : MonoBehaviour
         Debug.Log("Cancel");
     }
 
+    private void OnWin()
+    {
+        winUI.SetActive(true);
+        restartMainMenuUI.SetActive(true);
+    }
+
+    private void OnLose()
+    {
+        loseUI.SetActive(true);
+        restartMainMenuUI.SetActive(true);
+    }
+
+    private void OnStartButton()
+    {
+        _isWaveEnable = true;
+        waveStartButton.gameObject.SetActive(false);
+    }
+
+    private void OnRestartButton()
+    {
+        SceneManager.LoadScene("SampleScene");
+    }
+
+    private void OnMainMenuButton()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    private void OnContinueButton()
+    {
+        pauseUIObject.SetActive(false);
+        if (!_isDoubleSpeed)
+        {
+            Time.timeScale = 1f;
+        }
+        else
+        {
+            Time.timeScale = 2f;
+        }
+    }
+
+    private void OnPauseButton()
+    {
+        pauseUIObject.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
     private void ShowUI(GameObject UIObject, bool show)
     {
         if (show)
@@ -258,8 +340,8 @@ public class GameManager : MonoBehaviour
             {
                 upgradeButton.interactable = false;
             }
-            upgradeButtonText.text = $"Upgrade ${_currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney}";
-            sellButtonText.text = $"Sell ${_currentChooseTower.currentTower.GetComponent<Tower>().sellMoney}";
+            upgradeText.text = $"${_currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney}";
+            sellText.text = $"${_currentChooseTower.currentTower.GetComponent<Tower>().sellMoney}";
             UIObject.SetActive(show);
         }
         else
@@ -271,55 +353,69 @@ public class GameManager : MonoBehaviour
 
     private void UpgradeTower()
     {
-        if (_currentChooseTower != null)
+        if (!isLose || !isWin)
         {
-            if (_money >= _currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney)
+            if (_currentChooseTower != null)
             {
-                _currentChooseTower.currentTower.GetComponent<Tower>().Upgrade();
-                _currentChooseTower = null;
-                _currentBuyTower = null;
-                ShowUI(upgradeSellUIObject, false);
-            }
-            else
-            {
-                Debug.Log("no money to upgrade");
+                if (_money >= _currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney)
+                {
+                    _currentChooseTower.currentTower.GetComponent<Tower>().Upgrade();
+                    _currentChooseTower = null;
+                    _currentBuyTower = null;
+                    ShowUI(upgradeSellUIObject, false);
+                }
+                else
+                {
+                    Debug.Log("no money to upgrade");
+                }
             }
         }
     }
 
     private void SellTower()
     {
-        if (_currentChooseTower != null)
+        if (!isLose || !isWin)
         {
-            _currentChooseTower.SellTower();
-            _currentChooseTower = null;
-            _currentBuyTower = null;
-            upgradeSellUIObject.SetActive(false);
+            if (_currentChooseTower != null)
+            {
+                _currentChooseTower.SellTower();
+                _currentChooseTower = null;
+                _currentBuyTower = null;
+                upgradeSellUIObject.SetActive(false);
+            }
         }
     }
 
     private void ChooseBuyTower(GameObject tower, int type, Button button)
     {
-        CancelBuyUpgrade();
-        _currentBuyTower = tower;
-        _currentBuyTowerType = type;
-        Debug.Log($"You Choose {type}");
-        button.GetComponent<Outline>().enabled = true;
-        ShowUI(upgradeSellUIObject, false);
-        _currentChooseTower = null;
+        if (!isLose || !isWin)
+        {
+            CancelBuyUpgrade();
+            _currentBuyTower = tower;
+            _currentBuyTowerType = type;
+            Debug.Log($"You Choose {type}");
+            button.GetComponent<Outline>().enabled = true;
+            ShowUI(upgradeSellUIObject, false);
+            _currentChooseTower = null;
+        }
     }
 
     private void SetDoubleSpeed()
     {
-        if (Time.timeScale == 1f)
+        if (!isLose || !isWin)
         {
-            Time.timeScale = 2f;
-            doubleSpeedButtonText.text = "2";
-        }
-        else if (Time.timeScale == 2f)
-        {
-            Time.timeScale = 1f;
-            doubleSpeedButtonText.text = "1";
+            if (Time.timeScale == 1f)
+            {
+                Time.timeScale = 2f;
+                _isDoubleSpeed = true;
+                doubleSpeedButton.GetComponent<Image>().sprite = doubleSpeed;
+            }
+            else if (Time.timeScale == 2f)
+            {
+                Time.timeScale = 1f;
+                _isDoubleSpeed = false;
+                doubleSpeedButton.GetComponent<Image>().sprite = singleSpeed;
+            }
         }
     }
 
@@ -411,6 +507,7 @@ public class GameManager : MonoBehaviour
         if (_health <= 0)
         {
             isLose = true;
+            OnLose();
             Debug.Log("You Lose!");
             Time.timeScale = 0f;
         }
