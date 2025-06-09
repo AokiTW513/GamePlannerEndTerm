@@ -503,7 +503,7 @@ public class GameManager : MonoBehaviour
     public void TakeDamage()
     {
         _health -= 1;
-        _healthText.text = $"血量:{_health}/{_maxHealth}";
+        _healthText.text = $"{_health}/{_maxHealth}";
         if (_health <= 0)
         {
             isLose = true;
@@ -516,6 +516,6 @@ public class GameManager : MonoBehaviour
     public void TakeMoney(int money)
     {
         _money += money;
-        _moneyText.text = $"錢:{_money}";
+        _moneyText.text = $"${_money}";
     }
 }

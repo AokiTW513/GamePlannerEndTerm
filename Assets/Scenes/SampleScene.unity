@@ -5308,6 +5308,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 197759602}
+  - {fileID: 828082839}
   - {fileID: 1484871118}
   - {fileID: 1019223987}
   - {fileID: 1149920139}
@@ -5316,7 +5317,6 @@ RectTransform:
   - {fileID: 1681460746}
   - {fileID: 451175635}
   - {fileID: 1501500579}
-  - {fileID: 828082839}
   - {fileID: 1794736116}
   - {fileID: 1101732716}
   m_Father: {fileID: 0}
