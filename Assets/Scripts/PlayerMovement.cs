@@ -5,10 +5,9 @@ using UnityEngine.UI;
 public class PlayerMovement : MonoBehaviour
 {
     public Button skillLockRotationButton;
-    public Text skillLockRotationButtonText;
-
+    public Sprite skillLockSprite;
+    public Sprite skillUnlockSprite;
     public Button skillScanAllButton;
-    public Text skillScanAllButtonText;
 
     private bool _isLockRotation = false;
     private bool _isLockRotationInCD = false;
@@ -28,11 +27,20 @@ public class PlayerMovement : MonoBehaviour
     public List<GameObject> _newTowerListInFOV = new List<GameObject>();
     public GameObject enemy123;
 
+    public Image scanAllCDMaskImage;
+    public Image lockCDMaskImage;
+
     private void Awake()
     {
         _fov = GetComponent<FieldOfView>();
         skillLockRotationButton.onClick.AddListener(LockRotation);
         skillScanAllButton.onClick.AddListener(ScanAll);
+
+        scanAllCDMaskImage.fillAmount = 0f;
+        lockCDMaskImage.fillAmount = 0f;
+
+        scanAllCDMaskImage.gameObject.SetActive(false);
+        lockCDMaskImage.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -45,13 +53,14 @@ public class PlayerMovement : MonoBehaviour
         {
             if (_skillLockRotationCDCounter >= 0)
             {
+                lockCDMaskImage.gameObject.SetActive(true);
                 _skillLockRotationCDCounter -= Time.deltaTime;
-                skillLockRotationButtonText.text = $"CD:{_skillLockRotationCDCounter:F1}s";
+                lockCDMaskImage.fillAmount = Mathf.Clamp01(_skillLockRotationCDCounter / _skillLockRotationCD);
             }
             else
             {
                 _isLockRotationInCD = false;
-                skillLockRotationButtonText.text = "Lock";
+                lockCDMaskImage.gameObject.SetActive(false);
             }
         }
         if (_isScaning)
@@ -59,7 +68,6 @@ public class PlayerMovement : MonoBehaviour
             if (_skillScanAllCouner >= 0)
             {
                 _skillScanAllCouner -= Time.deltaTime;
-                skillScanAllButtonText.text = $"Scaning({_skillScanAllCouner:F1}s)";
             }
             else
             {
@@ -73,13 +81,14 @@ public class PlayerMovement : MonoBehaviour
         {
             if (_skillScanAllCDConnter >= 0)
             {
+                scanAllCDMaskImage.gameObject.SetActive(true);
                 _skillScanAllCDConnter -= Time.deltaTime;
-                skillScanAllButtonText.text = $"CD:{_skillScanAllCDConnter:F1}s";
+                scanAllCDMaskImage.fillAmount = Mathf.Clamp01(_skillScanAllCDConnter / _skillScanAllCD);
             }
             else
             {
                 _isScanAllInCD = false;
-                skillScanAllButtonText.text = "Scan All";
+                scanAllCDMaskImage.gameObject.SetActive(false);
             }
         }
 
@@ -96,13 +105,14 @@ public class PlayerMovement : MonoBehaviour
             if (_skillLockRotationCDCounter <= 0)
             {
                 _isLockRotation = true;
-                skillLockRotationButtonText.text = "Unlock";
+                skillLockRotationButton.GetComponent<Image>().sprite = skillUnlockSprite;
             }
         }
         else
         {
             _isLockRotationInCD = true;
             _isLockRotation = false;
+            skillLockRotationButton.GetComponent<Image>().sprite = skillLockSprite;
             if (_skillLockRotationCDCounter <= 0)
             {
                 _skillLockRotationCDCounter = _skillLockRotationCD;

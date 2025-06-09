@@ -118,7 +118,7 @@ public class GameManager : MonoBehaviour
         sellButton.onClick.AddListener(SellTower);
         doubleSpeedButton.onClick.AddListener(SetDoubleSpeed);
         _waveText.text = $"波次:{_wave}/{_waveEnd}";
-        _healthText.text = $"血量:{_health}/{_maxHealth}";
+        _healthText.text = $"{_health}/{_maxHealth}";
         _moneyText.text = $"${_money}";
         _waveCDText.text = $"距離下一波還有{_waveDelayCounter:F1}s";
         tower1PriceText.text = $"${tower1.GetComponent<Tower>().buyMoney}";

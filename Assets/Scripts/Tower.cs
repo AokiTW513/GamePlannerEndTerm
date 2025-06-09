@@ -25,7 +25,6 @@ public class Tower : MonoBehaviour
     public FieldOfView _fieldOfView;
     [SerializeField]
     private GameObject _towerObject;
-    private Text _towerStateText;
     public List<GameObject> _sameTypeEnemy = new List<GameObject>();
     public List<GameObject> _notSameTypeEnemy = new List<GameObject>();
     public GameObject _enemyATK;
@@ -50,12 +49,17 @@ public class Tower : MonoBehaviour
 
     [SerializeField]
     private GameObject _bulletPrefab;
+
+    public Sprite towerState1Sprite;
+    public Sprite towerState2Sprite;
+    public Sprite towerState3Sprite;
+    public Sprite towerState4Sprite;
+    public Sprite towerState5Sprite;
+    public Image towerStateSprite;
     
     public virtual void Awake()
     {
         _fieldOfView = GetComponentInChildren<FieldOfView>();
-        _towerStateText = GetComponentInChildren<Text>();
-        _towerStateText.text = "";
         _fieldOfView.viewAngle = fov;
     }
 
@@ -74,6 +78,7 @@ public class Tower : MonoBehaviour
         //看有沒有沒看著，然後看幾秒或是沒看幾秒後切狀態
         if (isWatched)
         {
+            towerStateSprite.gameObject.SetActive(true);
             if (!_isWatchedTimerReset)
             {
                 _watchedTimer = 0f;
@@ -84,24 +89,24 @@ public class Tower : MonoBehaviour
             {
                 towerState = 1;
                 SwitchTowerState();
-                _towerStateText.text = "正常";
+                towerStateSprite.sprite = towerState1Sprite;
             }
             else if (_watchedTimer >= 10f && _watchedTimer <= 30f)
             {
                 towerState = 2;
                 SwitchTowerState();
-                _towerStateText.text = "努力";
+                towerStateSprite.sprite = towerState2Sprite;
             }
             else if (_watchedTimer >= 30f)
             {
                 towerState = 3;
                 SwitchTowerState();
-                _towerStateText.text = "瘋狂努力";
+                towerStateSprite.sprite = towerState3Sprite;
             }
         }
         else
         {
-            _towerStateText.text = "";
+            towerStateSprite.gameObject.SetActive(false);
             _isWatchedTimerReset = false;
             if (_watchedTimer >= -50)
             {
@@ -111,26 +116,31 @@ public class Tower : MonoBehaviour
             {
                 towerState = 1;
                 SwitchTowerState();
+                towerStateSprite.sprite = towerState1Sprite;
             }
             else if (_watchedTimer >= 10f && _watchedTimer <= 30f)
             {
                 towerState = 2;
                 SwitchTowerState();
+                towerStateSprite.sprite = towerState2Sprite;
             }
             else if (_watchedTimer >= 30f)
             {
                 towerState = 3;
                 SwitchTowerState();
+                towerStateSprite.sprite = towerState3Sprite;
             }
             if (_watchedTimer <= -15)
             {
                 towerState = 4;
                 SwitchTowerState();
+                towerStateSprite.sprite = towerState4Sprite;
             }
             else if (_watchedTimer <= -30)
             {
                 towerState = 5;
                 SwitchTowerState();
+                towerStateSprite.sprite = towerState5Sprite;
             }
         }
     }
