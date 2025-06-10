@@ -79,6 +79,10 @@ public class Tower : MonoBehaviour
         if (isWatched)
         {
             towerStateSprite.gameObject.SetActive(true);
+            if(!GameManager.Instance._isWaveEnable)
+            {
+                return;
+            }
             if (!_isWatchedTimerReset)
             {
                 _watchedTimer = 0f;
@@ -108,6 +112,10 @@ public class Tower : MonoBehaviour
         {
             towerStateSprite.gameObject.SetActive(false);
             _isWatchedTimerReset = false;
+            if (GameManager.Instance._isWaveEnable)
+            {
+                return;
+            }
             if (_watchedTimer >= -50)
             {
                 _watchedTimer -= Time.deltaTime;

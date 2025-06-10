@@ -224,6 +224,7 @@ GameObject:
   - component: {fileID: 7345727030263900589}
   - component: {fileID: 7528243381879513795}
   - component: {fileID: 4864071587227600927}
+  - component: {fileID: 259171486436184445}
   m_Layer: 6
   m_Name: Enemy2
   m_TagString: Untagged
@@ -263,11 +264,11 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1.11
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -285,7 +286,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _healthText: {fileID: 435917799509662611}
   _enemyObject: {fileID: 3604677835294963721}
-  _type: 0
+  enemyHealth: 20
+  enemyType: 2
+  enemyDropMoney: 20
+--- !u!114 &259171486436184445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4404407412230788920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b94587e91444fa43b55b3a9a36a5081, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  rotateSpeed: 30
+  circleCount: 0.5
+  circleRadius: 9
 --- !u!1001 &4642812936981735032
 PrefabInstance:
   m_ObjectHideFlags: 0

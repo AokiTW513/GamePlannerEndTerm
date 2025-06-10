@@ -4,7 +4,7 @@ public class TowerManager : MonoBehaviour
 {
     public int towerType = 0;
     public GameObject currentTower;
-    private MeshRenderer towerPlaceMesh;
+    public MeshRenderer towerPlaceMesh;
     private Vector3 _offset = new Vector3(0, 1, 0);
 
     private void Awake()

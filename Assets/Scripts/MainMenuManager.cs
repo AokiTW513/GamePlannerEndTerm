@@ -15,7 +15,7 @@ public class MainMenuManager : MonoBehaviour
 
     private void OnStartButton()
     {
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("Level1");
     }
 
     private void OnQuitButton()

@@ -4,37 +4,60 @@ using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public Button skillLockRotationButton;
-    public Sprite skillLockSprite;
-    public Sprite skillUnlockSprite;
-    public Button skillScanAllButton;
+    [Header("數值")]
+    //鎖定視角技能冷卻時間
+    [SerializeField]
+    private float _skillLockRotationCD = 3f;
+    //玩家旋轉速度(正的順時針，負的逆時針)
+    [SerializeField]
+    private float _rotateAnglePerSecond = -15f;
+    //精神喊話技能冷卻時間
+    [SerializeField]
+    private float _skillScanAllCD = 60f;
+    //精神喊話技能持續多久
+    [SerializeField]
+    private float _skillScanAllTime = 9f;
+    //老闆視角角度
+    [SerializeField]
+    private float _playerFOV = 105;
+   
+    [Header("物件")]
+    [SerializeField]
+    private Button _skillLockRotationButton;
+    [SerializeField]
+    private Sprite _skillLockSprite;
+    [SerializeField]
+    private Sprite _skillUnlockSprite;
+    [SerializeField]
+    private Button _skillScanAllButton;
 
     private bool _isLockRotation = false;
     private bool _isLockRotationInCD = false;
-    private float _skillLockRotationCD = 3f;
+    
     private float _skillLockRotationCDCounter = 0f;
-    private float _rotateAnglePerSecond = -15f;
 
     private bool _isScaning = false;
     private bool _isScanAllInCD = false;
-    private float _skillScanAllCD = 60f;
     private float _skillScanAllCDConnter = 0f;
-    private float _skillScanAllTime = 9f;
+    
     private float _skillScanAllCouner = 0f;
 
     private float _originFOV;
     private FieldOfView _fov;
-    public List<GameObject> _newTowerListInFOV = new List<GameObject>();
-    public GameObject enemy123;
+    [SerializeField]
+    private List<GameObject> _newTowerListInFOV = new List<GameObject>();
 
-    public Image scanAllCDMaskImage;
-    public Image lockCDMaskImage;
+    [SerializeField]
+    private Image scanAllCDMaskImage;
+    [SerializeField]
+    private Image lockCDMaskImage;
 
     private void Awake()
     {
         _fov = GetComponent<FieldOfView>();
-        skillLockRotationButton.onClick.AddListener(LockRotation);
-        skillScanAllButton.onClick.AddListener(ScanAll);
+        _fov.viewAngle = _playerFOV;
+        _skillLockRotationButton.onClick.AddListener(LockRotation);
+        _skillScanAllButton.onClick.AddListener(ScanAll);
 
         scanAllCDMaskImage.fillAmount = 0f;
         lockCDMaskImage.fillAmount = 0f;
@@ -105,14 +128,14 @@ public class PlayerMovement : MonoBehaviour
             if (_skillLockRotationCDCounter <= 0)
             {
                 _isLockRotation = true;
-                skillLockRotationButton.GetComponent<Image>().sprite = skillUnlockSprite;
+                _skillLockRotationButton.GetComponent<Image>().sprite = _skillUnlockSprite;
             }
         }
         else
         {
             _isLockRotationInCD = true;
             _isLockRotation = false;
-            skillLockRotationButton.GetComponent<Image>().sprite = skillLockSprite;
+            _skillLockRotationButton.GetComponent<Image>().sprite = _skillLockSprite;
             if (_skillLockRotationCDCounter <= 0)
             {
                 _skillLockRotationCDCounter = _skillLockRotationCD;

@@ -2,8 +2,12 @@ using UnityEngine;
 
 public class BulletMove : MonoBehaviour
 {
+    [Header("數值")]
+    [SerializeField]
     private float _speed = 8f;
+    [SerializeField]
     private float _damage = 10;
+
     private void Update()
     {
         transform.position += transform.forward * _speed * Time.deltaTime;
@@ -14,13 +18,12 @@ public class BulletMove : MonoBehaviour
         transform.LookAt(enemy.transform.position);
         _damage = damage;
     }
-
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(collision.gameObject.name);
-        if (collision.gameObject.GetComponent<Enemy>() != null)
+        Debug.Log(other.gameObject.name);
+        if (other.gameObject.GetComponent<Enemy>() != null)
         {
-            collision.gameObject.GetComponent<Enemy>().TakeDamage(_damage);
+            other.gameObject.GetComponent<Enemy>().TakeDamage(_damage);
             Destroy(gameObject);
         }
     }

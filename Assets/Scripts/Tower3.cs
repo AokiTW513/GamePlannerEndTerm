@@ -2,12 +2,16 @@ using UnityEngine;
 
 public class Tower3 : Tower
 {
+    //賣出 
     public override int sellMoney { get; } = 75;
+    //買
     public override int buyMoney { get; } = 150;
+    //升級
     public override int upgradeMoney { get; } = 120;
 
     public override void Awake()
     {
+        //第一個攻擊力
         SetState(15f, 1f, 150f, 3);
         base.Awake();
     }
