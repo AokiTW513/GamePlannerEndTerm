@@ -45,7 +45,10 @@ public class Tower : MonoBehaviour
 
     public bool isWatched = false;
     private float _watchedTimer = 0f;
+    private float _switchStateCounter = 0f;
+    private float _switchStateTime = 1f;
     private bool _isWatchedTimerReset = false;
+    private bool _switchState = false;
 
     [SerializeField]
     private GameObject _bulletPrefab;
@@ -79,48 +82,65 @@ public class Tower : MonoBehaviour
         if (isWatched)
         {
             towerStateSprite.gameObject.SetActive(true);
-            if(!GameManager.Instance._isWaveEnable)
+            if (!GameManager.Instance._isWaveEnable)
             {
                 return;
             }
             if (!_isWatchedTimerReset)
             {
-                _watchedTimer = 0f;
+                _switchStateCounter = _switchStateTime;
                 _isWatchedTimerReset = true;
             }
-            _watchedTimer += Time.deltaTime;
-            if (_watchedTimer <= 10f)
+            if (_switchStateCounter >= 0)
             {
-                towerState = 1;
-                SwitchTowerState();
-                towerStateSprite.sprite = towerState1Sprite;
+                _switchStateCounter -= Time.deltaTime;
             }
-            else if (_watchedTimer >= 10f && _watchedTimer <= 30f)
+            else
             {
-                towerState = 2;
-                SwitchTowerState();
-                towerStateSprite.sprite = towerState2Sprite;
+                _watchedTimer = 0f;
+                _switchState = true;
             }
-            else if (_watchedTimer >= 30f)
+
+            if (_switchState)
             {
-                towerState = 3;
-                SwitchTowerState();
-                towerStateSprite.sprite = towerState3Sprite;
+                if (_watchedTimer <= 35f)
+                {
+                    _watchedTimer += Time.deltaTime;
+                }
+                if (_watchedTimer <= 10f)
+                {
+                    towerState = 1;
+                    SwitchTowerState();
+                    towerStateSprite.sprite = towerState1Sprite;
+                }
+                else if (_watchedTimer >= 10f && _watchedTimer <= 30f)
+                {
+                    towerState = 2;
+                    SwitchTowerState();
+                    towerStateSprite.sprite = towerState2Sprite;
+                }
+                else if (_watchedTimer >= 30f)
+                {
+                    towerState = 3;
+                    SwitchTowerState();
+                    towerStateSprite.sprite = towerState3Sprite;
+                }
             }
         }
         else
         {
             towerStateSprite.gameObject.SetActive(false);
             _isWatchedTimerReset = false;
-            if (GameManager.Instance._isWaveEnable)
+            _switchState = false;
+            if (!GameManager.Instance._isWaveEnable)
             {
                 return;
             }
-            if (_watchedTimer >= -50)
+            if (_watchedTimer >= -35)
             {
                 _watchedTimer -= Time.deltaTime;
             }
-            if (_watchedTimer <= 10f)
+            if (_watchedTimer <= 10f && _watchedTimer >= -15f)
             {
                 towerState = 1;
                 SwitchTowerState();
@@ -138,13 +158,13 @@ public class Tower : MonoBehaviour
                 SwitchTowerState();
                 towerStateSprite.sprite = towerState3Sprite;
             }
-            if (_watchedTimer <= -15)
+            if (_watchedTimer <= -15f && _watchedTimer >= -30)
             {
                 towerState = 4;
                 SwitchTowerState();
                 towerStateSprite.sprite = towerState4Sprite;
             }
-            else if (_watchedTimer <= -30)
+            else if (_watchedTimer <= -30f)
             {
                 towerState = 5;
                 SwitchTowerState();
@@ -203,7 +223,7 @@ public class Tower : MonoBehaviour
     private void SpawnBullet()
     {
         GameObject bullet = Instantiate(_bulletPrefab, transform.position, transform.rotation);
-        bullet.GetComponent<BulletMove>().SetBullet(_enemyATK, damage * atkMultiplier);
+        bullet.GetComponent<BulletMove>().SetBullet(_enemyATK, damage * atkMultiplier, type);
         Destroy(bullet, 5f);
     }
 
@@ -262,13 +282,7 @@ public class Tower : MonoBehaviour
         }
         if (_enemyATK != null)
         {
-            if (_enemyATK.GetComponent<Enemy>().type == 3 && type != 3)
-            {
-                damage = damage / 3;
-                damage = Mathf.Round(damage);
-            }
             TowerAttack();
-            damage = _originDamage;
         }
     }
 }

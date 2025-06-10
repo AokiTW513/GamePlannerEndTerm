@@ -7,6 +7,7 @@ using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using Unity.VisualScripting;
 
 [System.Serializable]
 public class EnemySpawnData
@@ -96,7 +97,7 @@ public class GameManager : MonoBehaviour
     private bool _isDoubleSpeed = false;
     public Sprite singleSpeed;
     public Sprite doubleSpeed;
-    private Vector3 _spawnPosition = new Vector3(-20, 0, 0);
+    private Vector3 _spawnPosition = new Vector3(-25, 0, 0);
 
     public GameObject _towerManagerPrefab; // 放置用點的Prefab（可以只是空物件或帶小圓圖）
 
@@ -112,6 +113,37 @@ public class GameManager : MonoBehaviour
     public GameObject restartMainMenuUI;
     public GameObject winUI;
     public GameObject loseUI;
+    public Button galleryButton;
+    public Button galleryBackButton;
+    public GameObject galleryUIObject;
+    public GameObject galleryTowerUIObject;
+    public GameObject galleryEnemyUIObject;
+    public GameObject galleryBossUIObject;
+    public GameObject galleryStateUIObject;
+    public Button towerGalleryButton;
+    public Button towerGalleryBackButton;
+    public Button enemyGalleryButton;
+    public Button enemyGalleryBackButton;
+    public Button bossGalleryButton;
+    public Button bossGalleryBackButton;
+    public Button stateGalleryButton;
+    public Button stateGalleryBackButton;
+    public Button tower1Intro;
+    public Button tower2Intro;
+    public Button tower3Intro;
+    public Button enemy1Intro;
+    public Button enemy2Intro;
+    public Button enemy3Intro;
+    public Button state1Intro;
+    public Button state2Intro;
+    public Button state3Intro;
+    public Button state4Intro;
+    public Button state5Intro;
+    public Text towerGalleryText;
+    public Text enemyGalleryText;
+    public Text stateGalleryText;
+    [TextArea(3, 7)]
+    public List<string> descriptions = new List<string>();
 
     private List<EnemySpawnData> _enemySpawnDataList;
 
@@ -168,6 +200,41 @@ public class GameManager : MonoBehaviour
         restartMainMenuUI.SetActive(false);
         winUI.SetActive(false);
         loseUI.SetActive(false);
+
+        galleryButton.onClick.AddListener(() => OnGalleryButton(galleryUIObject, true));
+        galleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryUIObject, false));
+
+        enemyGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryEnemyUIObject, true));
+        enemyGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryEnemyUIObject, false));
+
+        towerGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryTowerUIObject, true));
+        towerGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryTowerUIObject, false));
+
+        bossGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryBossUIObject, true));
+        bossGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryBossUIObject, false));
+
+        stateGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryStateUIObject, true));
+        stateGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryStateUIObject, false));
+
+        tower1Intro.onClick.AddListener(() => OnGalleryText(towerGalleryText, 3));
+        tower2Intro.onClick.AddListener(() => OnGalleryText(towerGalleryText, 4));
+        tower3Intro.onClick.AddListener(() => OnGalleryText(towerGalleryText, 5));
+
+        enemy1Intro.onClick.AddListener(() => OnGalleryText(enemyGalleryText, 0));
+        enemy2Intro.onClick.AddListener(() => OnGalleryText(enemyGalleryText, 1));
+        enemy3Intro.onClick.AddListener(() => OnGalleryText(enemyGalleryText, 2));
+
+        state1Intro.onClick.AddListener(() => OnGalleryText(stateGalleryText, 6));
+        state2Intro.onClick.AddListener(() => OnGalleryText(stateGalleryText, 7));
+        state3Intro.onClick.AddListener(() => OnGalleryText(stateGalleryText, 8));
+        state4Intro.onClick.AddListener(() => OnGalleryText(stateGalleryText, 9));
+        state5Intro.onClick.AddListener(() => OnGalleryText(stateGalleryText, 10));
+
+        galleryUIObject.SetActive(false);
+        galleryEnemyUIObject.SetActive(false);
+        galleryTowerUIObject.SetActive(false);
+        galleryBossUIObject.SetActive(false);
+        galleryStateUIObject.SetActive(false);
 
         Time.timeScale = 1f;
         _isPause = false;
@@ -280,6 +347,19 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
+    private void OnGalleryText(Text text, int index)
+    {
+        text.text = descriptions[index];
+    }
+
+    private void OnGalleryButton(GameObject UI, bool show)
+    {
+        UI.SetActive(show);
+        towerGalleryText.text = "";
+        enemyGalleryText.text = "";
+        stateGalleryText.text = "";
+    }
+
     private void ShowOutline(bool show)
     {
         buyTower1Button.GetComponent<Outline>().enabled = show;
@@ -356,8 +436,11 @@ public class GameManager : MonoBehaviour
     {
         if (show)
         {
+            upgradeSellUIObject.SetActive(false);
+            buyTowerUIObject.SetActive(false);
             if (_currentChooseTower.currentTower != null)
             {
+                CheckMoney(_currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney, upgradeButton);
                 if (_currentChooseTower.currentTower.GetComponent<Tower>().isUpgrade)
                 {
                     upgradeButton.interactable = false;
@@ -368,7 +451,6 @@ public class GameManager : MonoBehaviour
                     upgradeText.text = $"${_currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney}";
                 }
                 sellText.text = $"${_currentChooseTower.currentTower.GetComponent<Tower>().sellMoney}";
-                CheckMoney(_currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney, upgradeButton);
             }
             else
             {
@@ -582,6 +664,7 @@ public class GameManager : MonoBehaviour
         {
             if (_currentChooseTower.currentTower != null)
             {
+                CheckMoney(_currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney, upgradeButton);
                 if (_currentChooseTower.currentTower.GetComponent<Tower>().isUpgrade)
                 {
                     upgradeButton.interactable = false;
@@ -592,7 +675,6 @@ public class GameManager : MonoBehaviour
                     upgradeText.text = $"${_currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney}";
                 }
                 sellText.text = $"${_currentChooseTower.currentTower.GetComponent<Tower>().sellMoney}";
-                CheckMoney(_currentChooseTower.currentTower.GetComponent<Tower>().upgradeMoney, upgradeButton);
             }
             else
             {

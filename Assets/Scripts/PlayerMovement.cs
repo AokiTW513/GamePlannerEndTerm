@@ -49,8 +49,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField]
     private Image scanAllCDMaskImage;
-    [SerializeField]
-    private Image lockCDMaskImage;
+    public Image lockCDMaskImage;
 
     private void Awake()
     {
@@ -169,10 +168,17 @@ public class PlayerMovement : MonoBehaviour
         //偵測現在跟之前是否缺少哪個，並讓她isWatched變成false
         foreach (GameObject tower in _oldTowerListInFOV)
         {
-            if (!_newTowerListInFOV.Contains(tower))
+            if (tower != null)
             {
-                Debug.Log($"塔{tower.gameObject.name}已不在視野內");
-                tower.GetComponentInChildren<Tower>().isWatched = false;
+                if (!_newTowerListInFOV.Contains(tower))
+                {
+                    Debug.Log($"塔{tower.gameObject.name}已不在視野內");
+                    tower.GetComponentInChildren<Tower>().isWatched = false;
+                }
+            }
+            else
+            {
+                Debug.Log("tower had been destoryed");
             }
         }
     }
