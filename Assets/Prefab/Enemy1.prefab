@@ -286,7 +286,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _healthText: {fileID: 435917799509662611}
   _enemyObject: {fileID: 1465282843854254716}
-  enemyHealth: 40
+  enemyHealth: 45
   enemyType: 1
   enemyDropMoney: 10
 --- !u!114 &482503440639916913

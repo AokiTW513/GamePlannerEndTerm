@@ -7,7 +7,7 @@ using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using UnityEngine.SceneManagement;
 using System.Linq;
-using Unity.VisualScripting;
+using System.Collections;
 
 [System.Serializable]
 public class EnemySpawnData
@@ -147,6 +147,13 @@ public class GameManager : MonoBehaviour
 
     private List<EnemySpawnData> _enemySpawnDataList;
 
+    private bool isGetEasterEgg = false;
+    private bool isEasterEgg = false;
+    public GameObject getEasterEggUI;
+    public Button getEasterEggButton;
+    private AudioSource audioSource;
+    public GameObject useEasterEggText;
+
     private void Awake()
     {
         // 如果場上已經有一個 GameManager，這個就砍掉，保證只有一個
@@ -162,13 +169,8 @@ public class GameManager : MonoBehaviour
         _isAllEnemySpawned = true;
         _spawnDelayCounter = 0f;
 
-        _money = 320;
-
         _health = _maxHealth;
-
-        _enemySpawnDataList = CSVReader.ReadEnemySpawnData("Level1.csv");
-        _waveEnd = _enemySpawnDataList.Max(e => e.Wave);
-
+        StartCoroutine(CSVReader.ReadEnemySpawnData("Level1.csv", OnEnemyDataLoaded));
         _currentBuyTower = null;
         buyTower1Button.onClick.AddListener(() => ChooseBuyTower(tower1, 1));
         buyTower2Button.onClick.AddListener(() => ChooseBuyTower(tower2, 2));
@@ -201,20 +203,20 @@ public class GameManager : MonoBehaviour
         winUI.SetActive(false);
         loseUI.SetActive(false);
 
-        galleryButton.onClick.AddListener(() => OnGalleryButton(galleryUIObject, true));
-        galleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryUIObject, false));
+        galleryButton.onClick.AddListener(() => OnGalleryButton(galleryUIObject, pauseUIObject, true));
+        galleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryUIObject, pauseUIObject, false));
 
-        enemyGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryEnemyUIObject, true));
-        enemyGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryEnemyUIObject, false));
+        enemyGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryEnemyUIObject, galleryUIObject, true));
+        enemyGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryEnemyUIObject, galleryUIObject, false));
 
-        towerGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryTowerUIObject, true));
-        towerGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryTowerUIObject, false));
+        towerGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryTowerUIObject, galleryUIObject, true));
+        towerGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryTowerUIObject, galleryUIObject, false));
 
-        bossGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryBossUIObject, true));
-        bossGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryBossUIObject, false));
+        bossGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryBossUIObject, galleryUIObject, true));
+        bossGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryBossUIObject, galleryUIObject, false));
 
-        stateGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryStateUIObject, true));
-        stateGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryStateUIObject, false));
+        stateGalleryButton.onClick.AddListener(() => OnGalleryButton(galleryStateUIObject, galleryUIObject, true));
+        stateGalleryBackButton.onClick.AddListener(() => OnGalleryButton(galleryStateUIObject, galleryUIObject, false));
 
         tower1Intro.onClick.AddListener(() => OnGalleryText(towerGalleryText, 3));
         tower2Intro.onClick.AddListener(() => OnGalleryText(towerGalleryText, 4));
@@ -235,6 +237,12 @@ public class GameManager : MonoBehaviour
         galleryTowerUIObject.SetActive(false);
         galleryBossUIObject.SetActive(false);
         galleryStateUIObject.SetActive(false);
+
+        getEasterEggUI.SetActive(false);
+        getEasterEggButton.onClick.AddListener(OnGetEasterEggButton);
+        audioSource = GetComponent<AudioSource>();
+        useEasterEggText.SetActive(false);
+        audioSource.Stop();
 
         Time.timeScale = 1f;
         _isPause = false;
@@ -321,10 +329,27 @@ public class GameManager : MonoBehaviour
                             _currentChooseTower = hit.collider.gameObject.GetComponent<TowerManager>();
                             ShowUI(upgradeSellUIObject, true);
                         }
+                        if (isGetEasterEgg && !isEasterEgg)
+                        {
+                            isEasterEgg = true;
+                            audioSource.Play();
+                            useEasterEggText.SetActive(true);
+                            StartCoroutine(ShowGameObject(useEasterEggText));
+                        }
                     }
                     else
                     {
-                        CancelBuyUpgrade();
+                        if (hit.collider.gameObject.tag == "EasterEgg" && !isGetEasterEgg)
+                        {
+                            isGetEasterEgg = true;
+                            _isPause = true;
+                            getEasterEggUI.SetActive(true);
+                            Time.timeScale = 0f;
+                        }
+                        else
+                        {
+                            CancelBuyUpgrade();
+                        }
                     }
                 }
                 else
@@ -334,6 +359,25 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    private void OnEnemyDataLoaded(List<EnemySpawnData> dataList)
+    {
+        _enemySpawnDataList = dataList;
+        _waveEnd = _enemySpawnDataList.Max(e => e.Wave);
+
+        Debug.Log($"載入成功，共有 {_waveEnd} 波敵人");
+
+        _waveText.text = $"波次:{_wave}/{_waveEnd}";
+        // 如果你想立即開啟第一波：
+        // NewWave(); // 這時候才能開始用資料
+    }
+
+    private IEnumerator ShowGameObject(GameObject go)
+    {
+        yield return new WaitForSeconds(3f);
+        Destroy(go); 
+    }
+
     private bool IsTouchOrClickDown()
     {
         // 滑鼠點擊
@@ -347,14 +391,29 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
+    private void OnGetEasterEggButton()
+    {
+        _isPause = false;
+        getEasterEggUI.SetActive(false);
+        if (!_isDoubleSpeed)
+        {
+            Time.timeScale = 1f;
+        }
+        else
+        {
+            Time.timeScale = 2f;
+        }
+    }
+
     private void OnGalleryText(Text text, int index)
     {
         text.text = descriptions[index];
     }
 
-    private void OnGalleryButton(GameObject UI, bool show)
+    private void OnGalleryButton(GameObject UI, GameObject beforeUI, bool show)
     {
         UI.SetActive(show);
+        beforeUI.SetActive(!show);
         towerGalleryText.text = "";
         enemyGalleryText.text = "";
         stateGalleryText.text = "";
@@ -400,7 +459,7 @@ public class GameManager : MonoBehaviour
 
     private void OnRestartButton()
     {
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("Level1");
     }
 
     private void OnMainMenuButton()

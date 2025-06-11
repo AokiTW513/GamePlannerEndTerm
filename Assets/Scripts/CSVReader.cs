@@ -1,24 +1,33 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
+using System.Collections;
 
-public static class CSVReader
+public class CSVReader : MonoBehaviour
 {
-    public static List<EnemySpawnData> ReadEnemySpawnData(string fileName)
+    public static IEnumerator ReadEnemySpawnData(string fileName, System.Action<List<EnemySpawnData>> onLoaded)
     {
         var list = new List<EnemySpawnData>();
         var path = Path.Combine(Application.streamingAssetsPath, fileName);
 
-        if (!File.Exists(path))
+        UnityWebRequest www = UnityWebRequest.Get(path);
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("CSV file not found: " + path);
-            return list;
+            Debug.LogError("CSV load failed: " + www.error);
+            onLoaded?.Invoke(list);
+            yield break;
         }
 
-        var lines = File.ReadAllLines(path);
+        string[] lines = www.downloadHandler.text.Split('\n');
         for (int i = 1; i < lines.Length; i++)
         {
-            var parts = lines[i].Split(',');
+            var line = lines[i].Trim();
+            if (string.IsNullOrEmpty(line)) continue;
+
+            var parts = line.Split(',');
             if (parts.Length < 3) continue;
 
             EnemySpawnData data = new EnemySpawnData()
@@ -30,6 +39,6 @@ public static class CSVReader
             list.Add(data);
         }
 
-        return list;
+        onLoaded?.Invoke(list);
     }
 }

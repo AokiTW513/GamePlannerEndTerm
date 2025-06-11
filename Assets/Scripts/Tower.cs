@@ -44,7 +44,7 @@ public class Tower : MonoBehaviour
     public int towerState = 1;
 
     public bool isWatched = false;
-    private float _watchedTimer = 0f;
+    public float _watchedTimer = 0f;
     private float _switchStateCounter = 0f;
     private float _switchStateTime = 1f;
     private bool _isWatchedTimerReset = false;
@@ -91,35 +91,38 @@ public class Tower : MonoBehaviour
                 _switchStateCounter = _switchStateTime;
                 _isWatchedTimerReset = true;
             }
-            if (_switchStateCounter >= 0)
+            if (_switchStateCounter >= 0f)
             {
                 _switchStateCounter -= Time.deltaTime;
             }
             else
             {
-                _watchedTimer = 0f;
-                _switchState = true;
+                if (!_switchState)
+                {
+                    _watchedTimer = 0f;
+                    _switchState = true;
+                }
             }
 
             if (_switchState)
             {
-                if (_watchedTimer <= 35f)
+                if (_watchedTimer <= 20f)
                 {
                     _watchedTimer += Time.deltaTime;
                 }
-                if (_watchedTimer <= 10f)
+                if (_watchedTimer <= 5f)
                 {
                     towerState = 1;
                     SwitchTowerState();
                     towerStateSprite.sprite = towerState1Sprite;
                 }
-                else if (_watchedTimer >= 10f && _watchedTimer <= 30f)
+                else if (_watchedTimer >= 5f && _watchedTimer <= 15f)
                 {
                     towerState = 2;
                     SwitchTowerState();
                     towerStateSprite.sprite = towerState2Sprite;
                 }
-                else if (_watchedTimer >= 30f)
+                else if (_watchedTimer >= 15f)
                 {
                     towerState = 3;
                     SwitchTowerState();
@@ -136,35 +139,35 @@ public class Tower : MonoBehaviour
             {
                 return;
             }
-            if (_watchedTimer >= -35)
+            if (_watchedTimer >= -35f)
             {
                 _watchedTimer -= Time.deltaTime;
             }
-            if (_watchedTimer <= 10f && _watchedTimer >= -15f)
+            if (_watchedTimer <= 5f && _watchedTimer >= -10f)
             {
                 towerState = 1;
                 SwitchTowerState();
                 towerStateSprite.sprite = towerState1Sprite;
             }
-            else if (_watchedTimer >= 10f && _watchedTimer <= 30f)
+            else if (_watchedTimer >= 5f && _watchedTimer <= 15f)
             {
                 towerState = 2;
                 SwitchTowerState();
                 towerStateSprite.sprite = towerState2Sprite;
             }
-            else if (_watchedTimer >= 30f)
+            else if (_watchedTimer >= 15f)
             {
                 towerState = 3;
                 SwitchTowerState();
                 towerStateSprite.sprite = towerState3Sprite;
             }
-            if (_watchedTimer <= -15f && _watchedTimer >= -30)
+            if (_watchedTimer <= -10f && _watchedTimer >= -15f)
             {
                 towerState = 4;
                 SwitchTowerState();
                 towerStateSprite.sprite = towerState4Sprite;
             }
-            else if (_watchedTimer <= -30f)
+            else if (_watchedTimer <= -15f)
             {
                 towerState = 5;
                 SwitchTowerState();
